@@ -124,6 +124,10 @@ export default function ResultPage() {
           />
         )}
 
+        {job.status === 'preview_ready' && job.paid && (
+          <ProcessingState />
+        )}
+
         {job.status === 'processing_full' && (
           <div style={{ display: 'flex', flexDirection: 'column', gap: '24px' }}>
             {job.preview_url && (
