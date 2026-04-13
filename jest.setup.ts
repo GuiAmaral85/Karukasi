@@ -5,6 +5,8 @@ if (!process.env.HEYGEN_API_KEY) {
   process.env.HEYGEN_API_KEY = 'test-api-key'
 }
 
-window.HTMLMediaElement.prototype.play = () => Promise.resolve()
-window.HTMLMediaElement.prototype.pause = () => {}
-window.HTMLMediaElement.prototype.load = () => {}
+if (typeof window !== 'undefined') {
+  window.HTMLMediaElement.prototype.play = () => Promise.resolve()
+  window.HTMLMediaElement.prototype.pause = () => {}
+  window.HTMLMediaElement.prototype.load = () => {}
+}
