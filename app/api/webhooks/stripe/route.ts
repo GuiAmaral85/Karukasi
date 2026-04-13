@@ -3,9 +3,6 @@ import { getStripeClient } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase-server'
 import { registerTalkingPhoto, generateTalkingPhotoVideo } from '@/lib/heygen'
 
-// Tell Next.js to NOT parse the body — Stripe needs the raw bytes for signature verification
-export const config = { api: { bodyParser: false } }
-
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
   const sig = req.headers.get('stripe-signature')

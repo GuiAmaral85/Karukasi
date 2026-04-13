@@ -52,6 +52,12 @@ export async function GET(_req: NextRequest, { params }: RouteContext) {
           .eq('id', id)
         job.status = 'completed'
         job.full_video_url = heygenStatus.video_url
+
+        // Send download email if job has an email address
+        if (job.email) {
+          const { sendDownloadEmail } = await import('@/lib/resend')
+          void sendDownloadEmail(job.email as string, heygenStatus.video_url, id)
+        }
       } else if (heygenStatus.status === 'failed') {
         await supabase
           .from('jobs')
