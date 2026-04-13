@@ -63,7 +63,7 @@ export async function cloneVoice(
   formData.append('description', 'Karukasi voice clone')
 
   const ext = mimeType.includes('wav') ? 'wav' : 'mp3'
-  const blob = new Blob([audioBuffer], { type: mimeType })
+  const blob = new Blob([new Uint8Array(audioBuffer)], { type: mimeType })
   formData.append('files', blob, `voice_sample.${ext}`)
 
   const res = await fetch(`${BASE_URL}/v1/voices/add`, {
