@@ -1,5 +1,4 @@
 import {
-  registerTalkingPhoto,
   generateTalkingPhotoVideo,
   getVideoStatus,
 } from '@/lib/heygen'
@@ -7,43 +6,17 @@ import {
 global.fetch = jest.fn()
 afterEach(() => jest.clearAllMocks())
 
-describe('registerTalkingPhoto', () => {
-  it('calls HeyGen v2/talking_photo and returns talking_photo_id', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: true,
-      json: async () => ({ data: { talking_photo_id: 'tp_abc123' }, error: null }),
-    })
-
-    const id = await registerTalkingPhoto('https://example.com/photo.jpg')
-
-    expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/v2/talking_photo'),
-      expect.objectContaining({ method: 'POST' })
-    )
-    expect(id).toBe('tp_abc123')
-  })
-
-  it('throws on API error', async () => {
-    ;(global.fetch as jest.Mock).mockResolvedValueOnce({
-      ok: false,
-      status: 400,
-      json: async () => ({ error: { message: 'Invalid URL' } }),
-    })
-    await expect(registerTalkingPhoto('bad_url')).rejects.toThrow()
-  })
-})
-
 describe('generateTalkingPhotoVideo', () => {
-  it('calls HeyGen v2/video/generate and returns video_id', async () => {
+  it('calls HeyGen v3/videos and returns video_id', async () => {
     ;(global.fetch as jest.Mock).mockResolvedValueOnce({
       ok: true,
       json: async () => ({ data: { video_id: 'vid_xyz789' }, error: null }),
     })
 
-    const id = await generateTalkingPhotoVideo('tp_abc123', 'https://example.com/audio.mp3')
+    const id = await generateTalkingPhotoVideo('https://example.com/photo.jpg', 'https://example.com/audio.mp3')
 
     expect(global.fetch).toHaveBeenCalledWith(
-      expect.stringContaining('/v2/video/generate'),
+      expect.stringContaining('/v3/videos'),
       expect.objectContaining({ method: 'POST' })
     )
     expect(id).toBe('vid_xyz789')

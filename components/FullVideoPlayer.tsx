@@ -1,11 +1,52 @@
 'use client'
 
+import Link from 'next/link'
+
 interface Props { videoUrl: string }
 
 export default function FullVideoPlayer({ videoUrl }: Props) {
   return (
-    <div style={{ display: 'flex', flexDirection: 'column', gap: '32px', animation: 'fade-in 0.8s ease-out forwards' }}>
-      <div style={{ position: 'relative', overflow: 'hidden', borderRadius: '2px', maxWidth: '448px', margin: '0 auto' }}>
+    <div
+      className="animate-fade-in"
+      style={{
+        display: 'flex',
+        flexDirection: 'column',
+        alignItems: 'center',
+        gap: '32px',
+        textAlign: 'center',
+        padding: 'clamp(48px, 8vw, 72px) 0',
+      }}
+    >
+      {/* Title */}
+      <div style={{ display: 'flex', flexDirection: 'column', gap: '8px' }}>
+        <h2
+          className="k-display"
+          style={{ fontSize: 'clamp(22px, 3vw, 32px)' }}
+        >
+          Guarde este vídeo com carinho.
+        </h2>
+        <p
+          style={{
+            fontFamily: 'var(--font-body)',
+            fontSize: '14px',
+            color: 'var(--ink-muted)',
+            margin: 0,
+          }}
+        >
+          O vídeo completo está pronto. O download foi enviado também para o seu e-mail.
+        </p>
+      </div>
+
+      {/* Video */}
+      <div
+        style={{
+          width: '100%',
+          maxWidth: '320px',
+          overflow: 'hidden',
+          borderRadius: 'var(--r-struct)',
+          border: '1px solid var(--line)',
+        }}
+      >
         <video
           src={videoUrl}
           controls
@@ -15,21 +56,28 @@ export default function FullVideoPlayer({ videoUrl }: Props) {
           style={{ width: '100%', display: 'block' }}
         />
       </div>
-      <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+
+      {/* Buttons */}
+      <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%', maxWidth: '320px' }}>
         <a
           href={videoUrl}
           download
-          style={{
-            display: 'inline-block', border: '1px solid rgba(26,26,26,0.2)',
-            padding: '12px 32px', fontSize: '0.875rem', color: 'rgba(26,26,26,0.7)',
-            borderRadius: '2px', textDecoration: 'none', transition: 'all 0.2s',
-          }}
+          className="k-btn-primary"
+          style={{ width: '100%', justifyContent: 'center' }}
         >
           Baixar vídeo
+          <svg className="k-arrow" width="14" height="14" viewBox="0 0 14 14" fill="none" aria-hidden>
+            <path d="M7 2v8M3 7l4 4 4-4" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round" strokeLinejoin="round"/>
+          </svg>
         </a>
-        <p style={{ fontFamily: 'var(--font-display)', fontSize: '0.875rem', fontStyle: 'italic', color: 'rgba(26,26,26,0.35)', margin: 0 }}>
-          Guarde este vídeo com carinho.
-        </p>
+
+        <Link
+          href="/"
+          className="k-btn-ghost"
+          style={{ width: '100%', justifyContent: 'center' }}
+        >
+          Voltar ao início
+        </Link>
       </div>
     </div>
   )

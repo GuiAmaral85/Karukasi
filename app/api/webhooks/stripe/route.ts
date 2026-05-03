@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { getStripeClient } from '@/lib/stripe'
 import { createServiceClient } from '@/lib/supabase-server'
-import { registerTalkingPhoto, generateTalkingPhotoVideo } from '@/lib/heygen'
+import { generateTalkingPhotoVideo } from '@/lib/heygen'
 
 export async function POST(req: NextRequest) {
   const rawBody = await req.text()
@@ -84,8 +84,7 @@ async function generateFullVideo({
 
     await supabase.from('jobs').update({ status: 'processing_full' }).eq('id', jobId)
 
-    const talkingPhotoId = await registerTalkingPhoto(job.photo_url as string)
-    const fullVideoId = await generateTalkingPhotoVideo(talkingPhotoId, job.audio_url as string)
+    const fullVideoId = await generateTalkingPhotoVideo(job.photo_url as string, job.audio_url as string)
 
     await supabase
       .from('jobs')

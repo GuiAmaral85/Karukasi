@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { createServiceClient } from '@/lib/supabase-server'
 import { uploadFile } from '@/lib/supabase-storage'
 import { generateSpeech, cloneVoice } from '@/lib/elevenlabs'
-import { registerTalkingPhoto, generateTalkingPhotoVideo } from '@/lib/heygen'
+import { generateTalkingPhotoVideo } from '@/lib/heygen'
 
 export async function POST(req: NextRequest) {
   let formData: FormData
@@ -84,8 +84,7 @@ async function runPipeline({
     const audioUrl = await uploadFile(`audio/${jobId}.mp3`, audioBuffer, 'audio/mpeg')
     await updateJob({ audio_url: audioUrl, elevenlabs_voice_id: voiceId })
 
-    const talkingPhotoId = await registerTalkingPhoto(photoUrl)
-    const previewVideoId = await generateTalkingPhotoVideo(talkingPhotoId, audioUrl)
+    const previewVideoId = await generateTalkingPhotoVideo(photoUrl, audioUrl)
     await updateJob({ heygen_preview_video_id: previewVideoId, status: 'processing_preview' })
   } catch (err) {
     console.error('[generate] pipeline error', { jobId, err })
