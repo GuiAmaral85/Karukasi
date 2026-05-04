@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { waitUntil } from '@vercel/functions'
 import { createServiceClient } from '@/lib/supabase-server'
 import { uploadFile } from '@/lib/supabase-storage'
 import { generateSpeech, cloneVoice } from '@/lib/elevenlabs'
@@ -51,7 +52,7 @@ export async function POST(req: NextRequest) {
     if (error) console.error('[generate] updateJob error', { jobId, error })
   }
 
-  void runPipeline({ jobId, photoFile, audioFile, presetVoiceId, text, additionalPrompt, updateJob })
+  waitUntil(runPipeline({ jobId, photoFile, audioFile, presetVoiceId, text, additionalPrompt, updateJob }))
 
   return NextResponse.json({ job_id: jobId })
 }
