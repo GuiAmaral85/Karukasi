@@ -4,6 +4,7 @@ import Script from 'next/script'
 import './globals.css'
 
 const META_PIXEL_ID = '2087636415320834'
+const GA_MEASUREMENT_ID = 'G-QC9CZN8X7G'
 
 const fraunces = Fraunces({
   subsets: ['latin'],
@@ -49,6 +50,20 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       </head>
       <body>
         {children}
+
+        {/* Google Analytics 4 */}
+        <Script
+          src={`https://www.googletagmanager.com/gtag/js?id=${GA_MEASUREMENT_ID}`}
+          strategy="afterInteractive"
+        />
+        <Script id="ga4" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', '${GA_MEASUREMENT_ID}');
+          `}
+        </Script>
 
         {/* Meta Pixel */}
         <Script id="meta-pixel" strategy="afterInteractive">
