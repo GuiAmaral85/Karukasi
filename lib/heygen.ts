@@ -32,7 +32,6 @@ export async function generateTalkingPhotoVideo(
       url: photoUrl,
     },
     audio_url: audioUrl,
-    dimension: { width: 480, height: 480 },
   }
 
   const res = await fetch(`${BASE_URL}/v3/videos`, {
