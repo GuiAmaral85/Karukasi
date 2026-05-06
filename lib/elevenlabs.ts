@@ -81,3 +81,19 @@ export async function cloneVoice(
   const data = await res.json()
   return data.voice_id as string
 }
+
+// Delete a cloned voice by voice_id.
+// Non-throwing: logs on failure but doesn't break the caller.
+export async function deleteVoice(voiceId: string): Promise<void> {
+  const apiKey = getApiKey()
+
+  const res = await fetch(`${BASE_URL}/v1/voices/${voiceId}`, {
+    method: 'DELETE',
+    headers: { 'xi-api-key': apiKey },
+  })
+
+  if (!res.ok) {
+    const message = await res.text()
+    console.error('[elevenlabs] deleteVoice failed', { voiceId, status: res.status, message })
+  }
+}

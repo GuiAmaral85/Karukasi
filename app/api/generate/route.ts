@@ -2,7 +2,7 @@ import { NextRequest, NextResponse } from 'next/server'
 import { waitUntil } from '@vercel/functions'
 import { createServiceClient } from '@/lib/supabase-server'
 import { uploadFile } from '@/lib/supabase-storage'
-import { generateSpeech, cloneVoice } from '@/lib/elevenlabs'
+import { generateSpeech, cloneVoice, deleteVoice } from '@/lib/elevenlabs'
 import { generateTalkingPhotoVideo } from '@/lib/heygen'
 
 export async function POST(req: NextRequest) {
@@ -73,15 +73,25 @@ async function runPipeline({
     const photoUrl = await uploadFile(`photos/${jobId}.jpg`, photoBuffer, photoFile.type || 'image/jpeg')
     await updateJob({ photo_url: photoUrl })
 
+    let clonedVoiceId: string | null = null
     let voiceId: string
     if (audioFile && audioFile.size > 0) {
       const audioBuffer = Buffer.from(await audioFile.arrayBuffer())
-      voiceId = await cloneVoice(audioBuffer, audioFile.type || 'audio/mpeg')
+      clonedVoiceId = await cloneVoice(audioBuffer, audioFile.type || 'audio/mpeg')
+      voiceId = clonedVoiceId
     } else {
       voiceId = presetVoiceId!
     }
 
-    const audioBuffer = await generateSpeech(voiceId, text, additionalPrompt)
+    let audioBuffer: Buffer
+    try {
+      audioBuffer = await generateSpeech(voiceId, text, additionalPrompt)
+    } finally {
+      // Delete the cloned voice immediately after audio generation to free the slot.
+      // Runs even if generateSpeech fails, so the limit never gets exhausted.
+      if (clonedVoiceId) await deleteVoice(clonedVoiceId)
+    }
+
     const audioUrl = await uploadFile(`audio/${jobId}.mp3`, audioBuffer, 'audio/mpeg')
     await updateJob({ audio_url: audioUrl, elevenlabs_voice_id: voiceId })
 
