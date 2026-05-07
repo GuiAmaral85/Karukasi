@@ -258,6 +258,30 @@ export default function PreviewPlayer({
           </span>
         </div>
 
+        {/* AI disclaimer */}
+        <div
+          style={{
+            padding: '14px 16px',
+            border: '1px solid var(--line)',
+            borderRadius: 'var(--r-card)',
+            background: 'var(--bg-inset)',
+          }}
+        >
+          <p
+            style={{
+              fontFamily: 'var(--font-body)',
+              fontSize: '12px',
+              color: 'var(--ink-soft)',
+              lineHeight: 1.6,
+              margin: 0,
+            }}
+          >
+            O vídeo que você acabou de pré-visualizar foi criado por inteligência artificial a partir
+            da foto e do texto que você enviou. É uma homenagem em vídeo, não uma gravação real da
+            pessoa.
+          </p>
+        </div>
+
         {/* Buttons */}
         <div style={{ display: 'flex', flexDirection: 'column', gap: '12px' }}>
           <button
