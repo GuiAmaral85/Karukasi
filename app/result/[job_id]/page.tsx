@@ -2,6 +2,7 @@
 
 import Link from 'next/link'
 import { useEffect, useState, useCallback, useRef } from 'react'
+import { trackEvent } from '@/lib/pixel'
 import { useParams, useSearchParams } from 'next/navigation'
 import type { Job } from '@/types'
 import ProcessingState from '@/components/ProcessingState'
@@ -24,6 +25,7 @@ export default function ResultPage() {
   // Refs to track terminal state without stale closure issues
   const jobRef = useRef<Job | null>(null)
   const awaitingPaymentRef = useRef(!!returnedSessionId)
+  const purchaseFiredRef = useRef(false)
 
   const fetchJob = useCallback(async () => {
     try {
@@ -94,7 +96,16 @@ export default function ResultPage() {
     return () => { clearInterval(interval); clearTimeout(timeout) }
   }, [returnedSessionId, fetchJob])
 
+  // Fire Purchase once when job transitions to paid + completed
+  useEffect(() => {
+    if (job?.paid && job?.status === 'completed' && !purchaseFiredRef.current) {
+      purchaseFiredRef.current = true
+      trackEvent('Purchase', { value: 79, currency: 'BRL' })
+    }
+  }, [job?.paid, job?.status])
+
   const handlePaymentClick = async () => {
+    trackEvent('InitiateCheckout', { value: 79, currency: 'BRL' })
     setIsCheckingOut(true)
     try {
       const res = await fetch('/api/checkout', {

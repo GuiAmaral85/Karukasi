@@ -1,8 +1,9 @@
 'use client'
 
-import { useState, useRef, FormEvent, DragEvent, ChangeEvent, useCallback } from 'react'
+import { useState, useRef, FormEvent, DragEvent, ChangeEvent, useCallback, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
 import { VOICE_PRESETS, VoiceGender, VoiceAge } from '@/types'
+import { trackEvent } from '@/lib/pixel'
 
 /* ============================================================
    TYPES
@@ -16,6 +17,8 @@ type VoiceMode = 'upload' | 'pills' | null
 
 export default function CreationForm() {
   const router = useRouter()
+
+  useEffect(() => { trackEvent('ViewContent') }, [])
 
   // Field state
   const [photo, setPhoto] = useState<File | null>(null)
