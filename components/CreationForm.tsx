@@ -27,12 +27,18 @@ export default function CreationForm() {
   const [age, setAge] = useState<VoiceAge | null>(null)
   const [context, setContext] = useState('')
 
+  // Consent state
+  const [consentDeceased, setConsentDeceased] = useState(false)
+  const [consentAi, setConsentAi] = useState(false)
+  const [consentTerms, setConsentTerms] = useState(false)
+  const allConsentsChecked = consentDeceased && consentAi && consentTerms
+
   // UI state
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [submitError, setSubmitError] = useState<string | null>(null)
 
   // CTA is active when photo + text are filled
-  const ctaEnabled = photo !== null && text.trim().length > 0
+  const ctaEnabled = photo !== null && text.trim().length > 0 && allConsentsChecked
 
   // Derived: do we have a valid voice?
   const voiceReady = audio !== null || (gender !== null && age !== null)
@@ -89,6 +95,9 @@ export default function CreationForm() {
       if (voiceId) formData.append('voice_id', voiceId)
       formData.append('text', text)
       if (context.trim()) formData.append('prompt', context)
+      formData.append('consent_deceased', String(consentDeceased))
+      formData.append('consent_ai', String(consentAi))
+      formData.append('consent_terms', String(consentTerms))
 
       const res = await fetch('/api/generate', { method: 'POST', body: formData })
       if (!res.ok) {
@@ -186,6 +195,114 @@ export default function CreationForm() {
           </span>
         </div>
       </FieldGroup>
+
+      {/* CONSENT */}
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          gap: '14px',
+          paddingTop: '8px',
+          borderTop: '1px solid var(--line)',
+        }}
+      >
+        {[
+          {
+            id: 'consent-deceased',
+            checked: consentDeceased,
+            onChange: () => setConsentDeceased(v => !v),
+            label: (
+              <>
+                A pessoa nas fotos faleceu, e eu tenho autorização da família para criar este vídeo em
+                sua memória.
+              </>
+            ),
+          },
+          {
+            id: 'consent-ai',
+            checked: consentAi,
+            onChange: () => setConsentAi(v => !v),
+            label: (
+              <>
+                Entendo que a voz e a animação serão criadas por inteligência artificial. O vídeo é
+                uma homenagem, não uma representação fiel da pessoa.
+              </>
+            ),
+          },
+          {
+            id: 'consent-terms',
+            checked: consentTerms,
+            onChange: () => setConsentTerms(v => !v),
+            label: (
+              <>
+                Li e aceito os{' '}
+                <a
+                  href="/termos"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'var(--ink)',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: '3px',
+                  }}
+                >
+                  Termos de Uso
+                </a>
+                {' '}e a{' '}
+                <a
+                  href="/politica-de-conteudo"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  style={{
+                    color: 'var(--ink)',
+                    textDecoration: 'underline',
+                    textUnderlineOffset: '3px',
+                  }}
+                >
+                  Política de Conteúdo
+                </a>
+                {' '}do Karukasi.
+              </>
+            ),
+          },
+        ].map(item => (
+          <label
+            key={item.id}
+            htmlFor={item.id}
+            style={{
+              display: 'flex',
+              gap: '12px',
+              alignItems: 'flex-start',
+              cursor: 'pointer',
+            }}
+          >
+            <input
+              id={item.id}
+              type="checkbox"
+              checked={item.checked}
+              onChange={item.onChange}
+              style={{
+                marginTop: '2px',
+                flexShrink: 0,
+                width: '16px',
+                height: '16px',
+                accentColor: 'var(--ink)',
+                cursor: 'pointer',
+              }}
+            />
+            <span
+              style={{
+                fontFamily: 'var(--font-body)',
+                fontSize: '13px',
+                color: 'var(--ink-soft)',
+                lineHeight: 1.6,
+              }}
+            >
+              {item.label}
+            </span>
+          </label>
+        ))}
+      </div>
 
       {/* ERROR */}
       {submitError && (
