@@ -490,7 +490,7 @@ function SiteFooter() {
           >
             {[
               { label: 'Termos', href: '/termos' },
-              { label: 'Privacidade', href: '/privacidade' },
+              { label: 'Política de Conteúdo', href: '/politica-de-conteudo' },
               { label: 'Contato', href: 'mailto:contatokarukasi@gmail.com' },
             ].map(link => (
               <a
