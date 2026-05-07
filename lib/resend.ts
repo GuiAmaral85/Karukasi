@@ -27,8 +27,11 @@ export async function sendDownloadEmail(
           <h1 style="font-weight: 300; font-size: 2rem; letter-spacing: -0.02em; margin: 0 0 24px;">
             Karukasi
           </h1>
-          <p style="font-size: 1rem; line-height: 1.7; color: rgba(26,26,26,0.7); margin: 0 0 32px;">
+          <p style="font-size: 1rem; line-height: 1.7; color: rgba(26,26,26,0.7); margin: 0 0 24px;">
             O vídeo memorial está pronto para ser guardado.
+          </p>
+          <p style="font-size: 0.8125rem; line-height: 1.65; color: rgba(26,26,26,0.55); margin: 0 0 32px; padding: 14px 16px; border: 1px solid rgba(26,26,26,0.12); border-radius: 4px;">
+            Anexamos abaixo o vídeo que você criou no Karukasi. Voz e animação foram geradas por inteligência artificial a partir da foto e do texto que você enviou. Este vídeo é uma homenagem em vídeo — não uma gravação real da pessoa retratada. Para uso pessoal e familiar. Por favor, ao compartilhar com outras pessoas da família, mencione que se trata de uma homenagem criada por IA.
           </p>
           <a href="${resultUrl}"
              style="display: inline-block; border: 1px solid #C4A4A4; padding: 12px 32px;
