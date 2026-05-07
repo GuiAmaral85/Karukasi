@@ -78,6 +78,22 @@ export default function FullVideoPlayer({ videoUrl }: Props) {
         />
       </div>
 
+      {/* AI disclaimer */}
+      <p
+        style={{
+          fontFamily: 'var(--font-body)',
+          fontSize: '13px',
+          color: 'var(--ink-soft)',
+          lineHeight: 1.65,
+          maxWidth: '320px',
+          textAlign: 'center',
+          margin: 0,
+        }}
+      >
+        Pronto. Sua homenagem está disponível. Lembre-se: voz e animação foram criadas por IA.
+        Guarde o vídeo com carinho — e use apenas para a memória da família.
+      </p>
+
       {/* Buttons */}
       <div style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '12px', width: '100%', maxWidth: '320px' }}>
         <button

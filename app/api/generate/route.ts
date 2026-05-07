@@ -19,6 +19,22 @@ export async function POST(req: NextRequest) {
   const text = (formData.get('text') as string | null)?.trim()
   const additionalPrompt = (formData.get('prompt') as string | null)?.trim() || undefined
 
+  const consentDeceased = formData.get('consent_deceased') === 'true'
+  const consentAi       = formData.get('consent_ai')       === 'true'
+  const consentTerms    = formData.get('consent_terms')    === 'true'
+
+  if (!consentDeceased || !consentAi || !consentTerms) {
+    return NextResponse.json(
+      { message: 'É necessário aceitar todos os termos para continuar.' },
+      { status: 400 }
+    )
+  }
+
+  const ip = req.headers.get('x-forwarded-for')?.split(',')[0]?.trim()
+    ?? req.headers.get('x-real-ip')
+    ?? 'unknown'
+  const ua = req.headers.get('user-agent') ?? 'unknown'
+
   if (!photoFile || photoFile.size === 0) {
     return NextResponse.json({ message: 'A foto é obrigatória.' }, { status: 400 })
   }
@@ -36,7 +52,16 @@ export async function POST(req: NextRequest) {
 
   const { data: jobRow, error: insertError } = await supabase
     .from('jobs')
-    .insert({ status: 'pending' })
+    .insert({
+      status:           'pending',
+      consent_deceased: consentDeceased,
+      consent_ai:       consentAi,
+      consent_terms:    consentTerms,
+      consent_at:       new Date().toISOString(),
+      consent_ip:       ip,
+      consent_ua:       ua,
+      consent_version:  'v1.0',
+    })
     .select('id')
     .single()
 

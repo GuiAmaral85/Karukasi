@@ -119,6 +119,22 @@ function Hero() {
         >
           <HeroLandscape />
         </div>
+
+        {/* AI disclaimer */}
+        <p
+          className="animate-fade-in"
+          style={{
+            marginTop: '16px',
+            animationDelay: '440ms',
+            fontFamily: 'var(--font-body)',
+            fontSize: '11px',
+            color: 'var(--ink-muted)',
+            textAlign: 'center',
+            letterSpacing: '0.02em',
+          }}
+        >
+          Voz e animação criadas por inteligência artificial.
+        </p>
       </div>
     </section>
   )
@@ -474,7 +490,7 @@ function SiteFooter() {
           >
             {[
               { label: 'Termos', href: '/termos' },
-              { label: 'Privacidade', href: '/privacidade' },
+              { label: 'Política de Conteúdo', href: '/politica-de-conteudo' },
               { label: 'Contato', href: 'mailto:contatokarukasi@gmail.com' },
             ].map(link => (
               <a
