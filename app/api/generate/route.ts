@@ -82,6 +82,16 @@ export async function POST(req: NextRequest) {
   return NextResponse.json({ job_id: jobId })
 }
 
+// Approximate character limit for ~3 seconds of Portuguese TTS speech.
+const PREVIEW_MAX_CHARS = 100
+
+function truncateForPreview(text: string): string {
+  if (text.length <= PREVIEW_MAX_CHARS) return text
+  const slice = text.slice(0, PREVIEW_MAX_CHARS)
+  const lastSpace = slice.lastIndexOf(' ')
+  return lastSpace > 0 ? slice.slice(0, lastSpace) : slice
+}
+
 async function runPipeline({
   jobId, photoFile, audioFile, presetVoiceId, text, additionalPrompt, updateJob,
 }: {
@@ -108,19 +118,27 @@ async function runPipeline({
       voiceId = presetVoiceId!
     }
 
-    let audioBuffer: Buffer
+    // Generate preview audio (truncated text ~3s) and full audio in sequence.
+    // Delete the cloned voice after both succeed (or on any failure).
+    let previewAudioBuffer: Buffer
+    let fullAudioBuffer: Buffer
     try {
-      audioBuffer = await generateSpeech(voiceId, text, additionalPrompt)
+      previewAudioBuffer = await generateSpeech(voiceId, truncateForPreview(text))
+      fullAudioBuffer    = await generateSpeech(voiceId, text, additionalPrompt)
     } finally {
-      // Delete the cloned voice immediately after audio generation to free the slot.
-      // Runs even if generateSpeech fails, so the limit never gets exhausted.
+      // Free the cloned voice slot immediately — never exhausts the limit.
       if (clonedVoiceId) await deleteVoice(clonedVoiceId)
     }
 
-    const audioUrl = await uploadFile(`audio/${jobId}.mp3`, audioBuffer, 'audio/mpeg')
-    await updateJob({ audio_url: audioUrl, elevenlabs_voice_id: voiceId })
+    // Upload preview audio (used only for the short HeyGen preview video).
+    const previewAudioUrl = await uploadFile(`audio/${jobId}_preview.mp3`, previewAudioBuffer, 'audio/mpeg')
 
-    const previewVideoId = await generateTalkingPhotoVideo(photoUrl, audioUrl)
+    // Upload full audio — stored for post-payment full video generation.
+    const fullAudioUrl = await uploadFile(`audio/${jobId}.mp3`, fullAudioBuffer, 'audio/mpeg')
+    await updateJob({ audio_url: fullAudioUrl, elevenlabs_voice_id: voiceId })
+
+    // HeyGen preview uses the short audio — video will be ~3 seconds.
+    const previewVideoId = await generateTalkingPhotoVideo(photoUrl, previewAudioUrl)
     await updateJob({ heygen_preview_video_id: previewVideoId, status: 'processing_preview' })
   } catch (err) {
     console.error('[generate] pipeline error', { jobId, err })
